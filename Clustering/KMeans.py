@@ -5,7 +5,10 @@
 # @File    : KMeans.py
 # @Software: PyCharm
 
+
 import pandas as pd
+from matplotlib import pyplot as plt
+from sklearn import metrics
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 
@@ -20,12 +23,18 @@ class InputData:
 
         self.data = data
 
-    def score(self, n=range(2, 7)):
-        km = []
+    def silhouette(self, n=range(2, 7)):
+        score = []
         for n_clusters in n:
-            km[n_clusters - 2] = KMeans(n_clusters=n_clusters).fit(data)
+            km = KMeans(n_clusters=n_clusters).fit(self.data)
+            score.append(metrics.silhouette_score(self.data, km.labels_))
 
-
+        plt.title('Silhouette Coefficient')
+        plt.xlabel('n_clusters')
+        plt.ylabel('score')
+        plt.xticks(n)
+        plt.plot(n, score, 'o-')
+        plt.show()
 # class KMeansVisual:
 #     def __init__(self, data, n_clusters, method, scaled=False):
 #
@@ -57,5 +66,5 @@ class InputData:
 if __name__ == '__main__':
     filename = u'/home/hust/Desktop/Myproject/astroML/KMeans/data/Table_new.csv'
     Table = pd.read_csv(filename, usecols=['offset', 'T90']).dropna()
-    a = InputData(Table, scaled=True)
-    print(a.data)
+    a = InputData(Table)
+    a.silhouette()
